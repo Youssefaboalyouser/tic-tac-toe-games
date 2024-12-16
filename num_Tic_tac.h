@@ -51,7 +51,7 @@ num_Tic_Tac_Board<T>::num_Tic_Tac_Board() {
     for (int i = 0; i < this->rows; i++) {
         this->board[i] = new int[this->columns];
         for (int j = 0; j < this->columns; j++) {
-            this->board[i][j] = 0;
+            this->board[i][j] =  -1;
         }
     }
     this->n_moves = 0;
@@ -60,21 +60,29 @@ num_Tic_Tac_Board<T>::num_Tic_Tac_Board() {
 
 template <typename T>
 bool num_Tic_Tac_Board<T>::update_board(int x, int y, T mark) {
+    
     // Only update if move is valid
-    if (!(x < 0 || x >= this->rows || y < 0 || y >= this->columns) && (this->board[x][y] == 0||mark>=0)) {
-        if (mark == 0) {
-            num_Tic_Tac_Player<T>::exc_list.erase(this->board[x][y]);  
-            this->board[x][y] = 0;
-            this->n_moves--;
-        } else {
+    if (!(x < 0 || x >= this->rows || y < 0 || y >= this->columns) && (this->board[x][y] ==  -1 || mark== -1) ) {
+     if (mark ==  -1) {
+        auto it = find(num_Tic_Tac_Player<T>::exc_list.begin(), num_Tic_Tac_Player<T>::exc_list.end(), this->board[x][y]);
+        if (it != num_Tic_Tac_Player<T>::exc_list.end()) {
+            num_Tic_Tac_Player<T>::exc_list.erase(it);
+        }
+        this->board[x][y] =  -1;
+        this->n_moves--;
+    }
+
+        else {
             this->n_moves++;
             this->board[x][y] = mark;
             num_Tic_Tac_Player<T>::exc_list.insert(mark);
         }
+
         return true;
     }
     return false;
 }
+
 
 
 
@@ -83,25 +91,25 @@ bool num_Tic_Tac_Board<T>::is_win() {
     // Check rows and columns
     for (int i = 0; i < this->rows; i++) {
         // Check row i
-        if (this->board[i][0] != 0 && this->board[i][1] != 0 && this->board[i][2] != 0 &&
+        if (this->board[i][0] !=  -1 && this->board[i][1] !=  -1 && this->board[i][2] !=  -1 &&
             (this->board[i][0] + this->board[i][1] + this->board[i][2] == 15)) {
             return true;
         }
 
         // Check column i
-        if (this->board[0][i] != 0 && this->board[1][i] != 0 && this->board[2][i] != 0 &&
+        if (this->board[0][i] !=  -1 && this->board[1][i] !=  -1 && this->board[2][i] !=  -1 &&
             (this->board[0][i] + this->board[1][i] + this->board[2][i] == 15)) {
             return true;
         }
     }
 
     // Check diagonals
-    if (this->board[0][0] != 0 && this->board[1][1] != 0 && this->board[2][2] != 0 &&
+    if (this->board[0][0] !=  -1 && this->board[1][1] !=  -1 && this->board[2][2] !=  -1 &&
         (this->board[0][0] + this->board[1][1] + this->board[2][2] == 15)) {
         return true;
     }
 
-    if (this->board[0][2] != 0 && this->board[1][1] != 0 && this->board[2][0] != 0 &&
+    if (this->board[0][2] != -1 && this->board[1][1] != -1 && this->board[2][0] != -1 &&
         (this->board[0][2] + this->board[1][1] + this->board[2][0] == 15)) {
         return true;
     }
@@ -184,7 +192,7 @@ void num_Tic_Tac_Board<T>::display_board() {
         cout << "\n| ";
         for (int j = 0; j < this->columns; j++) {
             cout << "(" << i << "," << j << ")";
-            cout << setw(2) << (to_string(this->board[i][j])== "0" ?" ":to_string(this->board[i][j])) << " |";
+            cout << setw(2) << (to_string(this->board[i][j])== "-1" ?" ":to_string(this->board[i][j])) << " |";
         }
         cout << "\n-----------------------------";
     }
